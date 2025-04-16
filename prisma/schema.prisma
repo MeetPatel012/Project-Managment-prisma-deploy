@@ -14,24 +14,25 @@ datasource db {
 }
 
 model User {
-  userId            Int              @id @default(autoincrement()) @map("user_id")
-  cognitoId         String           @unique @map("cognito_id")
-  username          String           @unique
-  profilePictureUrl String?          @map("profile_picture_url")
-  teamId            Int?             @map("team_id")
-  team              Team?            @relation(fields: [teamId], references: [id])
-  authoredTasks     Task[]           @relation("TaskAuthor")
-  assignedTasks     Task[]           @relation("TaskAssignee")
-  taskAssignments   TaskAssignment[]
-  attachments       Attachment[]
-  comments          Comment[]
+  userId            Int     @id @default(autoincrement())
+  cognitoId         String  @unique
+  username          String  @unique
+  profilePictureUrl String?
+  teamId            Int?
+
+  authoredTasks   Task[]           @relation("TaskAuthor")
+  assignedTasks   Task[]           @relation("TaskAssignee")
+  taskAssignments TaskAssignment[]
+  attachments     Attachment[]
+  comments        Comment[]
+  team            Team?            @relation(fields: [teamId], references: [id])
 }
 
 model Team {
   id                   Int           @id @default(autoincrement())
-  teamName             String        @map("team_name")
-  productOwnerUserId   Int?          @map("product_owner_user_id")
-  projectManagerUserId Int?          @map("project_manager_user_id")
+  teamName             String
+  productOwnerUserId   Int?
+  projectManagerUserId Int?
   projectTeams         ProjectTeam[]
   user                 User[]
 }
@@ -40,33 +41,34 @@ model Project {
   id           Int           @id @default(autoincrement())
   name         String
   description  String?
-  startDate    DateTime?     @map("start_date")
-  endDate      DateTime?     @map("end_date")
+  startDate    DateTime?
+  endDate      DateTime?
   tasks        Task[]
   projectTeams ProjectTeam[]
 }
 
 model ProjectTeam {
   id        Int     @id @default(autoincrement())
-  teamId    Int     @map("team_id")
-  projectId Int     @map("project_id")
+  teamId    Int
+  projectId Int
   team      Team    @relation(fields: [teamId], references: [id])
   project   Project @relation(fields: [projectId], references: [id])
 }
 
 model Task {
-  id              Int              @id @default(autoincrement())
-  title           String
-  description     String?
-  status          String?
-  priority        String?
-  tags            String?
-  startDate       DateTime?        @map("start_date")
-  dueDate         DateTime?        @map("due_date")
-  points          Int?
-  projectId       Int              @map("project_id")
-  authorUserId    Int              @map("author_user_id")
-  assignedUserId  Int?             @map("assigned_user_id")
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String?
+  status         String?
+  priority       String?
+  tags           String?
+  startDate      DateTime?
+  dueDate        DateTime?
+  points         Int?
+  projectId      Int
+  authorUserId   Int
+  assignedUserId Int?
+
   project         Project          @relation(fields: [projectId], references: [id])
   author          User             @relation("TaskAuthor", fields: [authorUserId], references: [userId])
   assignee        User?            @relation("TaskAssignee", fields: [assignedUserId], references: [userId])
@@ -76,28 +78,31 @@ model Task {
 }
 
 model TaskAssignment {
-  id     Int  @id @default(autoincrement())
-  userId Int  @map("user_id")
-  taskId Int  @map("task_id")
-  user   User @relation(fields: [userId], references: [userId])
-  task   Task @relation(fields: [taskId], references: [id])
+  id     Int @id @default(autoincrement())
+  userId Int
+  taskId Int
+
+  user User @relation(fields: [userId], references: [userId])
+  task Task @relation(fields: [taskId], references: [id])
 }
 
 model Attachment {
   id           Int     @id @default(autoincrement())
-  fileURL      String  @map("file_url")
-  fileName     String? @map("file_name")
-  taskId       Int     @map("task_id")
-  uploadedById Int     @map("uploaded_by_id")
-  task         Task    @relation(fields: [taskId], references: [id])
-  uploadedBy   User    @relation(fields: [uploadedById], references: [userId])
+  fileURL      String
+  fileName     String?
+  taskId       Int
+  uploadedById Int
+
+  task       Task @relation(fields: [taskId], references: [id])
+  uploadedBy User @relation(fields: [uploadedById], references: [userId])
 }
 
 model Comment {
   id     Int    @id @default(autoincrement())
   text   String
-  taskId Int    @map("task_id")
-  userId Int    @map("user_id")
-  task   Task   @relation(fields: [taskId], references: [id])
-  user   User   @relation(fields: [userId], references: [userId])
+  taskId Int
+  userId Int
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [userId])
 }
