@@ -1,1 +1,1 @@
-# Project-Managment-prisma-deploy
+# Project-Management-Prisma
